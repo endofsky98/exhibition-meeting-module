@@ -1,0 +1,62 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+
+env:
+  NEXT_PUBLIC_API_URL: http://3.36.108.114:8005
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Build frontend
+        run: cd frontend && npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://3.36.108.114:8005
+
+      - name: Tar standalone files
+        run: |
+          cd frontend/.next
+          tar -czf standalone.tar.gz standalone/
+
+      - name: Stop services & clean
+        uses: appleboy/ssh-action@master
+        with:
+          host: 3.36.108.114
+          port: 31222
+          username: Administrator
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: set PM2_HOME=C:\Users\Administrator\.pm2 && (pm2 delete exhibition-meeting-frontend || echo skip) && (pm2 delete exhibition-meeting-backend || echo skip) && cd C:/Users/Administrator/Documents/aiproject/exhibition-meeting-module && (if exist frontend\standalone rmdir /s /q frontend\standalone) && mkdir frontend\standalone
+
+      - name: Upload standalone
+        uses: horochx/deploy-via-scp@v1.0.0
+        with:
+          host: 3.36.108.114
+          port: 31222
+          username: Administrator
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: frontend/.next/standalone/*
+          target: /C:/Users/Administrator/Documents/aiproject/exhibition-meeting-module/frontend/standalone
+          strip_components: 3
+
+      - name: Start services
+        uses: appleboy/ssh-action@master
+        with:
+          host: 3.36.108.114
+          port: 31222
+          username: Administrator
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: set PM2_HOME=C:\Users\Administrator\.pm2 && cd C:/Users/Administrator/Documents/aiproject/exhibition-meeting-module/backend && git pull origin main && pip install -r requirements.txt && cd .. && pm2 start C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module\pm2.frontend.json && pm2 start C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module\pm2.backend.json && pm2 save
