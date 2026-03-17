@@ -4,10 +4,10 @@
       "name": "exhibition-meeting-frontend",
       "cwd": "./frontend",
       "script": "node_modules/.bin/next",
-      "args": "start -p 3006",
+      "args": "start -p 3007",
       "env": {
         "NODE_ENV": "production",
-        "PORT": "3006"
+        "PORT": "3007"
       }
     }
   ]
