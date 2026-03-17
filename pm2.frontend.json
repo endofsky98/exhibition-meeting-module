@@ -2,12 +2,13 @@
   "apps": [
     {
       "name": "exhibition-meeting-frontend",
-      "cwd": "./frontend",
-      "script": "node_modules/.bin/next",
-      "args": "start -p 3007",
+      "script": "C:\\Program Files\\nodejs\\node.exe",
+      "args": "server.js",
+      "cwd": "C:\\Users\\Administrator\\Documents\\aiproject\\exhibition-meeting-module\\frontend\\standalone",
+      "interpreter": "none",
       "env": {
-        "NODE_ENV": "production",
-        "PORT": "3007"
+        "PORT": 3007,
+        "HOSTNAME": "0.0.0.0"
       }
     }
   ]

@@ -2,10 +2,10 @@
   "apps": [
     {
       "name": "exhibition-meeting-backend",
-      "cwd": "./backend",
-      "script": "uvicorn",
-      "args": "main:app --host 0.0.0.0 --port 8006",
-      "interpreter": "python3",
+      "script": "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "args": "-m uvicorn main:app --host 0.0.0.0 --port 8006",
+      "cwd": "C:\\Users\\Administrator\\Documents\\aiproject\\exhibition-meeting-module\\backend",
+      "interpreter": "none",
       "env": {
         "PORT": "8006"
       }
