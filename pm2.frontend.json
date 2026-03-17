@@ -1,0 +1,14 @@
+{
+  "apps": [
+    {
+      "name": "exhibition-meeting-frontend",
+      "cwd": "./frontend",
+      "script": "node_modules/.bin/next",
+      "args": "start -p 3006",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": "3006"
+      }
+    }
+  ]
+}
