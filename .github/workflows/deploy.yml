@@ -27,11 +27,6 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: http://3.36.108.114:8005
 
-      - name: Tar standalone files
-        run: |
-          cd frontend/.next
-          tar -czf standalone.tar.gz standalone/
-
       - name: Stop services & clean
         uses: appleboy/ssh-action@master
         with:
@@ -39,14 +34,7 @@ jobs:
           port: 31222
           username: Administrator
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            $ProjectDir = "C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module"
-            $env:PM2_HOME = "C:\Users\Administrator\.pm2"
-            try { pm2 delete exhibition-meeting-frontend } catch { Write-Host "skip" }
-            try { pm2 delete exhibition-meeting-backend } catch { Write-Host "skip" }
-            cd $ProjectDir
-            if (Test-Path "frontend\standalone") { Remove-Item -Path "frontend\standalone" -Recurse -Force }
-            New-Item -ItemType Directory -Path "frontend\standalone" -Force | Out-Null
+          script: set PM2_HOME=C:\Users\Administrator\.pm2 && (pm2 delete exhibition-meeting-frontend || echo skip) && (pm2 delete exhibition-meeting-backend || echo skip)
 
       - name: Upload standalone
         uses: horochx/deploy-via-scp@v1.0.0
@@ -66,13 +54,4 @@ jobs:
           port: 31222
           username: Administrator
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            $ProjectDir = "C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module"
-            $env:PM2_HOME = "C:\Users\Administrator\.pm2"
-            cd "$ProjectDir\backend"
-            git pull origin main
-            pip install -r requirements.txt
-            cd $ProjectDir
-            pm2 start "$ProjectDir\pm2.frontend.json"
-            pm2 start "$ProjectDir\pm2.backend.json"
-            pm2 save
+          script: set PM2_HOME=C:\Users\Administrator\.pm2 && cd C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module\backend && git pull origin main && pip install -r requirements.txt && cd .. && pm2 start C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module\pm2.frontend.json && pm2 start C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module\pm2.backend.json && pm2 save
