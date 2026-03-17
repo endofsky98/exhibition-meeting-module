@@ -41,11 +41,10 @@ jobs:
         with:
           host: 3.36.108.114
           port: 31222
-          username: Administrator
+          user: Administrator
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: frontend/.next/standalone/*
-          target: C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module\frontend\standalone
-          strip_components: 3
+          local: frontend/.next/standalone/
+          remote: C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module\frontend\standalone
 
       - name: Start services
         uses: appleboy/ssh-action@master
