@@ -34,22 +34,24 @@ jobs:
           port: 31222
           username: Administrator
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: set PM2_HOME=C:\Users\Administrator\.pm2 && (pm2 delete exhibition-meeting-frontend || echo skip) && (pm2 delete exhibition-meeting-backend || echo skip)
+          script: set PM2_HOME=C:\Users\Administrator\.pm2 && (pm2 delete exhibition-meeting-frontend || echo skip) && (pm2 delete exhibition-meeting-backend || echo skip) && cd C:/Users/Administrator/Documents/aiproject/exhibition-meeting-module && (if exist frontend\standalone rmdir /s /q frontend\standalone) && mkdir frontend\standalone
 
-      - name: Deploy via Git
+      - name: Upload standalone
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: 3.36.108.114
+          port: 31222
+          username: Administrator
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: frontend/.next/standalone/*
+          target: C:/Users/Administrator/Documents/aiproject/exhibition-meeting-module/frontend/standalone
+          strip_components: 3
+
+      - name: Start services
         uses: appleboy/ssh-action@master
         with:
           host: 3.36.108.114
           port: 31222
           username: Administrator
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            set PM2_HOME=C:\Users\Administrator\.pm2
-            cd C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module
-            git pull origin main
-            cd backend
-            pip install -r requirements.txt
-            cd ..
-            pm2 start pm2.frontend.json
-            pm2 start pm2.backend.json
-            pm2 save
+          script: set PM2_HOME=C:\Users\Administrator\.pm2 && cd C:/Users/Administrator/Documents/aiproject/exhibition-meeting-module/backend && git pull origin main && pip install -r requirements.txt && cd .. && pm2 start C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module\pm2.frontend.json && pm2 start C:\Users\Administrator\Documents\aiproject\exhibition-meeting-module\pm2.backend.json && pm2 save
